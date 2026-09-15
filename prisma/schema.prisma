@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AITool {
+  id                String            @id @default(cuid())
+  name              String            @unique
+  slug              String            @unique
+  description       String
+  longDescription   String?
+  provider          String
+  categories        String[]          @default([])
+  subcategories     String[]          @default([])
+  pricing           String            @default("Free")
+  website           String?
+  apiAvailable      Boolean           @default(false)
+  features          String[]          @default([])
+  useCases          String[]          @default([])
+  logo              String?
+  screenshots       String[]          @default([])
+  rating            Float             @default(0)
+  reviewCount       Int               @default(0)
+  isFeatured        Boolean           @default(false)
+  isTrending        Boolean           @default(false)
+  isApproved        Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  reviews           Review[]          @relation("ToolReviews")
+  comparisons       ToolComparison[]  @relation("ToolInComparison")
+  submittedBy       User?             @relation("UserSubmissions", fields: [submittedById], references: [id], onDelete: SetNull)
+  submittedById     String?
+
+  @@index([provider])
+  @@index([pricing])
+  @@index([isFeatured])
+  @@index([isTrending])
+  @@index([isApproved])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      @db.SmallInt
+  content   String   @db.Text
+  tool      AITool   @relation("ToolReviews", fields: [toolId], references: [id], onDelete: Cascade)
+  toolId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  upvotes   Int      @default(0)
+  downvotes Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([toolId, userId])
+  @@index([toolId])
+  @@index([userId])
+}
+
+model ToolComparison {
+  id        String   @id @default(cuid())
+  tools     AITool[] @relation("ToolInComparison")
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("user")
+  isAdmin       Boolean   @default(false)
+  reviews       Review[]
+  submissions   AITool[]  @relation("UserSubmissions")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  email     String
+  message   String   @db.Text
+  rating    Int?     @db.SmallInt
+  createdAt DateTime @default(now())
+}
