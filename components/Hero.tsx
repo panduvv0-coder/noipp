@@ -105,21 +105,23 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
         </div>
 
-        {/* Category Pills & Filters */}
+        {/* Category Filter Grid */}
         <div className="mt-10 space-y-4 max-w-5xl mx-auto">
-          {/* Categories */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="text-xs uppercase tracking-wider text-zinc-500 font-semibold mb-2">
+            Filter Tools by Category
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                className={`px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 border ${
                   selectedCategory === cat
-                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30 scale-105 border border-purple-400'
-                    : 'glass-pill text-zinc-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-600/25 border-purple-400 scale-[1.02]'
+                    : 'bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 hover:bg-zinc-800/80'
                 }`}
               >
-                {cat}
+                <span>{cat}</span>
               </button>
             ))}
           </div>
